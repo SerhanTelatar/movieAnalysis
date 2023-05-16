@@ -7,7 +7,10 @@ def intBudgetMaker(budgetStr):
     budgetInt = int(budgetStr)
     return budgetInt
 
-    
+headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3' #bu kısım değişebilir
+}
+
 URL = "https://www.imdb.com/list/ls056515174/?st_dt=&mode=simple&page=1&sort=user_rating,desc"
 
 page = requests.get(URL)
