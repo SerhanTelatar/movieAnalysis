@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
 import numpy as np
 from sklearn.metrics import mean_squared_error, r2_score
+from scipy.stats import chi2_contingency
+
 
 from google.colab import drive
 drive.mount('/content/drive/')
@@ -35,21 +37,29 @@ sum = 0
 for i in rateList:
     sum += i
 
+df['RateCategory'] = pd.cut(df['Rate'], bins=[0, 7, 8.5, float('inf')], labels=['Low', 'Medium', 'High'])
+
+contingency_table = pd.crosstab(df['RateCategory'], df['Box Office'])
+
+chi2, p_value, _, _ = chi2_contingency(contingency_table)
+
 mse = mean_squared_error(df["Box Office"], predicted_values)
 r2 = r2_score(df["Box Office"], predicted_values)
 
-# Calculate adjusted R-squared
-n = len(df["Rate"])  # Number of data points
-p = 1  # Number of predictors (in this case, it's 1, which is the "Rate" feature)
+n = len(df["Rate"])  
+p = 1  
 adjusted_r2 = 1 - (1 - r2) * (n - 1) / (n - p - 1)
 
 for i in range(len(distance_list)):
     plt.plot([df["Rate"].values[i], df["Rate"].values[i]], [df["Box Office"].values[i], predicted_values[i]], color='gray', linestyle='--', alpha=0.5)
     plt.text(df["Rate"].values[i], (df["Box Office"].values[i] + predicted_values[i]) / 2, f"{distance_list[i] / 100000:.2f}", color='black', ha='center', va='center', fontsize=6)
 
-plt.title("Movie Rating vs. Budget")
+plt.title("Movie Rating vs. Box Office")
 plt.xlabel("Rating")
-plt.ylabel("Budget")
+plt.ylabel("Box Office")
+
+print("Chi-squared value:", chi2)
+print("p-value:", p_value)
 
 print("Mean Squared Error:", mse)
 print("R-squared:", r2)
